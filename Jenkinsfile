@@ -9,7 +9,7 @@ pipeline {
     // 👇 This is where environment variables live
     environment {
         STUDENT_NAME  = 'Dumebi Idowu'
-        STUDENT_SCORE = '72'
+        STUDENT_SCORE = '40'
         APP_VERSION   = '1.0.0'
     }
 

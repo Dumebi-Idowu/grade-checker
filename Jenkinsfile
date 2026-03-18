@@ -6,17 +6,34 @@ pipeline {
         }
     }
 
-    // 👇 This is where environment variables live
+    // 👇 Parameters replace the hardcoded environment block
+    parameters {
+        string(
+            name: 'STUDENT_NAME', 
+            defaultValue: 'Dumebi Idowu', 
+            description: 'Enter the student name'
+        )
+        string(
+            name: 'STUDENT_SCORE', 
+            defaultValue: '50', 
+            description: 'Enter the student score (0-100)'
+        )
+        choice(
+            name: 'REPORT_TYPE',
+            choices: ['simple', 'detailed'],
+            description: 'Choose the type of report'
+        )
+    }
+
     environment {
-        STUDENT_NAME  = 'Dumebi Idowu'
-        STUDENT_SCORE = '40'
-        APP_VERSION   = '1.0.0'
+        APP_VERSION = '2.0.0'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                echo "Checking out version ${env.APP_VERSION}..."
+                echo "Grade Checker version ${env.APP_VERSION}"
+                echo "Running ${params.REPORT_TYPE} report..."
                 checkout scm
             }
         }
@@ -37,14 +54,19 @@ pipeline {
 
         stage('Run') {
             steps {
-                echo "Analyzing grade for ${env.STUDENT_NAME}..."
-                sh 'python grade_checker.py'
+                echo "Checking grade for ${params.STUDENT_NAME}..."
+                sh '''
+                    export STUDENT_NAME="${STUDENT_NAME}"
+                    export STUDENT_SCORE="${STUDENT_SCORE}"
+                    export REPORT_TYPE="${REPORT_TYPE}"
+                    python grade_checker.py
+                '''
             }
         }
     }
 
     post {
-        success { echo "✅ Grade check for ${env.STUDENT_NAME} completed!" }
+        success { echo "✅ Report for ${params.STUDENT_NAME} completed!" }
         failure { echo '❌ Pipeline failed. Check the logs.' }
         always  { cleanWs() }
     }

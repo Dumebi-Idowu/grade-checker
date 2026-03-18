@@ -52,17 +52,17 @@ pipeline {
             }
         }
 
-        stage('Run') {
-            steps {
-                echo "Checking grade for ${params.STUDENT_NAME}..."
-                sh '''
-                    export STUDENT_NAME="${STUDENT_NAME}"
-                    export STUDENT_SCORE="${STUDENT_SCORE}"
-                    export REPORT_TYPE="${REPORT_TYPE}"
-                    python grade_checker.py
-                '''
-            }
-        }
+stage('Run') {
+    steps {
+        echo "Checking grade for ${params.STUDENT_NAME}..."
+        sh """
+            export STUDENT_NAME="${params.STUDENT_NAME}"
+            export STUDENT_SCORE="${params.STUDENT_SCORE}"
+            export REPORT_TYPE="${params.REPORT_TYPE}"
+            python grade_checker.py
+        """
+    }
+}
     }
 
     post {

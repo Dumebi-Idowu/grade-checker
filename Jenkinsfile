@@ -71,18 +71,3 @@ pipeline {
         always  { cleanWs() }
     }
 }
-```
-
----
-
-## Step 2 — Understanding the Cron Syntax
-
-`H/5 * * * *` looks confusing at first but it's simple:
-```
-H/5  *  *  *  *
- │   │  │  │  │
- │   │  │  │  └── Day of week (any)
- │   │  │  └───── Month (any)
- │   │  └──────── Day of month (any)
- │   └─────────── Hour (any)
- └─────────────── Every 5 minutes

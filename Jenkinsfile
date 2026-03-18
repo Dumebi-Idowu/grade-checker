@@ -6,7 +6,10 @@ pipeline {
         }
     }
 
-    // 👇 Parameters replace the hardcoded environment block
+    triggers {
+        pollSCM('H/5 * * * *')   // 👈 check GitHub every 5 minutes
+    }
+
     parameters {
         string(
             name: 'STUDENT_NAME', 
@@ -37,32 +40,29 @@ pipeline {
                 checkout scm
             }
         }
-
         stage('Setup') {
             steps {
                 echo 'Installing pytest...'
                 sh 'pip install pytest -q'
             }
         }
-
         stage('Test') {
             steps {
                 echo 'Running tests...'
                 sh 'python -m pytest test_grade_checker.py -v'
             }
         }
-
-stage('Run') {
-    steps {
-        echo "Checking grade for ${params.STUDENT_NAME}..."
-        sh """
-            export STUDENT_NAME="${params.STUDENT_NAME}"
-            export STUDENT_SCORE="${params.STUDENT_SCORE}"
-            export REPORT_TYPE="${params.REPORT_TYPE}"
-            python grade_checker.py
-        """
-    }
-}
+        stage('Run') {
+            steps {
+                echo "Checking grade for ${params.STUDENT_NAME}..."
+                sh """
+                    export STUDENT_NAME="${params.STUDENT_NAME}"
+                    export STUDENT_SCORE="${params.STUDENT_SCORE}"
+                    export REPORT_TYPE="${params.REPORT_TYPE}"
+                    python grade_checker.py
+                """
+            }
+        }
     }
 
     post {
@@ -71,3 +71,18 @@ stage('Run') {
         always  { cleanWs() }
     }
 }
+```
+
+---
+
+## Step 2 — Understanding the Cron Syntax
+
+`H/5 * * * *` looks confusing at first but it's simple:
+```
+H/5  *  *  *  *
+ │   │  │  │  │
+ │   │  │  │  └── Day of week (any)
+ │   │  │  └───── Month (any)
+ │   │  └──────── Day of month (any)
+ │   └─────────── Hour (any)
+ └─────────────── Every 5 minutes
